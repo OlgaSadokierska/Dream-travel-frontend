@@ -5,6 +5,7 @@ import Navbar from "./layout/Navbar";
 import { AllTravels } from "./pages/AllTravels";
 import { HomePage } from "./pages/HomePage";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 export default function App() {
     return (
@@ -14,6 +15,7 @@ export default function App() {
                 <Route path="/" element={<HomePage/>}/>
                 <Route path="/travel" element={<AllTravels/>}/>
                 <Route path="/about" element={<About/>}/>
+                <Route path="/contact" element={<Contact/>}/>
             </Routes>
         </BrowserRouter>
     );
