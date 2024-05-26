@@ -6,6 +6,7 @@ import { AllTravels } from "./pages/AllTravels";
 import { HomePage } from "./pages/HomePage";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import {MyTravels} from "./pages/MyTravels";
 
 export default function App() {
     return (
@@ -13,7 +14,8 @@ export default function App() {
             <Navbar/>
             <Routes>
                 <Route path="/" element={<HomePage/>}/>
-                <Route path="/travel" element={<AllTravels/>}/>
+                <Route path="/all-travels" element={<AllTravels/>}/>
+                <Route path="/my-travels" element={<MyTravels/>}/>
                 <Route path="/about" element={<About/>}/>
                 <Route path="/contact" element={<Contact/>}/>
             </Routes>

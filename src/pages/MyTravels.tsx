@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export function AllTravels() {
+export function MyTravels() {
     const [travels, setTravels] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
     useEffect(() => {
+
+        //to do zmiany
         axios.get('http://localhost:8080/api/v1/travels', { withCredentials: true })
             .then(response => setTravels(response.data))
             .catch(error => console.log(error));
@@ -102,7 +104,7 @@ export function AllTravels() {
 
     return (
         <div style={styles.container}>
-            <h2>Lista podróży</h2>
+            <h2>Lista moich podróży</h2>
             <table style={styles.table}>
                 <thead>
                     <tr>
@@ -124,6 +126,7 @@ export function AllTravels() {
                             <td style={styles.td}>{travel.rate}</td>
                             <td style={styles.td}>
                                 <button style={styles.button} onClick={() => handleDetails(travel.id)}>Wyświetl</button>
+                                <button style={styles.button} onClick={() => handleDetails(travel.id)}>Edytuj</button>
                             </td>
                         </tr>
                     ))}
