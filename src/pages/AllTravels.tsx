@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+
 
 export function AllTravels() {
     const [travels, setTravels] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
+    const navigate = useNavigate();
+
+    const handleAddNewTravel = () => {
+        navigate("/add-new-travel");
+    };
     useEffect(() => {
         axios.get('http://localhost:8080/api/v1/travels', { withCredentials: true })
             .then(response => setTravels(response.data))
@@ -15,7 +22,7 @@ export function AllTravels() {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return new Date(dateString).toLocaleDateString('pl-PL');
     }
-     //trzeba zaimplementować
+    //trzeba zaimplementować
     function handleDetails(travelId) {
         console.log('Szczegóły dla podróży ID:', travelId);
     }
@@ -103,30 +110,33 @@ export function AllTravels() {
     return (
         <div style={styles.container}>
             <h2>Lista podróży</h2>
+            <button style={styles.button} onClick={handleAddNewTravel}>
+                Dodaj nową podróż
+            </button>
             <table style={styles.table}>
                 <thead>
-                    <tr>
-                        {headers.map((header, index) => (
-                            <th key={index} style={styles.th} onClick={() => requestSort(header.key)}>
-                                {header.name} {getSortDirectionIcon(header.key)}
-                            </th>
-                        ))}
-                    </tr>
+                <tr>
+                    {headers.map((header, index) => (
+                        <th key={index} style={styles.th} onClick={() => requestSort(header.key)}>
+                            {header.name} {getSortDirectionIcon(header.key)}
+                        </th>
+                    ))}
+                </tr>
                 </thead>
                 <tbody>
-                    {sortedTravels.map((travel, index) => (
-                        <tr key={travel.id} style={index % 2 === 0 ? styles.evenRow : null}>
-                            <td style={styles.td}>{travel.country}</td>
-                            <td style={styles.td}>{travel.city}</td>
-                            <td style={styles.td}>{formatDate(travel.startDate)}</td>
-                            <td style={styles.td}>{formatDate(travel.endDate)}</td>
-                            <td style={styles.td}>{travel.description}</td>
-                            <td style={styles.td}>{travel.rate}</td>
-                            <td style={styles.td}>
-                                <button style={styles.button} onClick={() => handleDetails(travel.id)}>Wyświetl</button>
-                            </td>
-                        </tr>
-                    ))}
+                {sortedTravels.map((travel, index) => (
+                    <tr key={travel.id} style={index % 2 === 0 ? styles.evenRow : null}>
+                        <td style={styles.td}>{travel.country}</td>
+                        <td style={styles.td}>{travel.city}</td>
+                        <td style={styles.td}>{formatDate(travel.startDate)}</td>
+                        <td style={styles.td}>{formatDate(travel.endDate)}</td>
+                        <td style={styles.td}>{travel.description}</td>
+                        <td style={styles.td}>{travel.rate}</td>
+                        <td style={styles.td}>
+                            <button style={styles.button} onClick={() => handleDetails(travel.id)}>Wyświetl</button>
+                        </td>
+                    </tr>
+                ))}
                 </tbody>
             </table>
         </div>
