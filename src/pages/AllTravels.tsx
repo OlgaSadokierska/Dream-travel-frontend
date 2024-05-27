@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
-
 export function AllTravels() {
     const [travels, setTravels] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
@@ -12,19 +11,24 @@ export function AllTravels() {
     const handleAddNewTravel = () => {
         navigate("/add-new-travel");
     };
+
     useEffect(() => {
         axios.get('http://localhost:8080/api/v1/travels', { withCredentials: true })
             .then(response => setTravels(response.data))
             .catch(error => console.log(error));
     }, []);
+    
 
     function formatDate(dateString) {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return new Date(dateString).toLocaleDateString('pl-PL');
     }
-    //trzeba zaimplementować
+
     function handleDetails(travelId) {
-        console.log('Szczegóły dla podróży ID:', travelId);
+        const travelDetails = travels.find(travel => travel.id === travelId);
+        if (travelDetails) {
+            navigate(`/details/${travelId}`, { state: { travelDetails } });
+        }
     }
 
     const sortedTravels = React.useMemo(() => {
@@ -65,8 +69,6 @@ export function AllTravels() {
         { name: 'Miasto', key: 'city' },
         { name: 'Data rozpoczęcia', key: 'startDate' },
         { name: 'Data zakończenia', key: 'endDate' },
-        { name: 'Opis', key: 'description' },
-        { name: 'Ocena', key: 'rate' },
         { name: 'Szczegóły', key: 'details'}
     ];
 
@@ -130,8 +132,6 @@ export function AllTravels() {
                         <td style={styles.td}>{travel.city}</td>
                         <td style={styles.td}>{formatDate(travel.startDate)}</td>
                         <td style={styles.td}>{formatDate(travel.endDate)}</td>
-                        <td style={styles.td}>{travel.description}</td>
-                        <td style={styles.td}>{travel.rate}</td>
                         <td style={styles.td}>
                             <button style={styles.button} onClick={() => handleDetails(travel.id)}>Wyświetl</button>
                         </td>
