@@ -13,7 +13,6 @@ import MenuItem from '@mui/material/MenuItem';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useCookies } from 'react-cookie';
 
 const pages = [
     { label: 'O nas', link: '/about' },
@@ -48,6 +47,7 @@ export default function Navbar() {
             navigate('/');
         } else {
             window.location.href = 'http://localhost:8080';
+
             localStorage.setItem('logged', 'true');
         }
     };

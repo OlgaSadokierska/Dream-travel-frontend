@@ -6,9 +6,13 @@ export function MyTravels() {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
     useEffect(() => {
+        axios.get('http://localhost:8080/', { withCredentials: true })
+            .then(response => localStorage.setItem('email', response.data.email))
+            .catch(error => console.log(error));
 
-        //to do zmiany
-        axios.get('http://localhost:8080/api/v1/travels', { withCredentials: true })
+        const userEmail = localStorage.getItem('email');
+
+        axios.get(`http://localhost:8080/api/v1/users/${userEmail}/travels`, { withCredentials: true })
             .then(response => setTravels(response.data))
             .catch(error => console.log(error));
     }, []);
@@ -17,7 +21,7 @@ export function MyTravels() {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return new Date(dateString).toLocaleDateString('pl-PL');
     }
-     //trzeba zaimplementować
+
     function handleDetails(travelId) {
         console.log('Szczegóły dla podróży ID:', travelId);
     }
