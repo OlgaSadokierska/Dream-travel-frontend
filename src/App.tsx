@@ -8,6 +8,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import {MyTravels} from "./pages/MyTravels";
 import {UserPanel} from "./pages/UserPanel";
+import {AddNewTravel} from "./pages/AddNewTravel";
 
 export default function App() {
     return (
@@ -20,6 +21,8 @@ export default function App() {
                 <Route path="/about" element={<About/>}/>
                 <Route path="/contact" element={<Contact/>}/>
                 <Route path="/userpanel" element={<UserPanel/>}/>
+                <Route exact path="/" component={AllTravels} />
+                <Route path="/add-new-travel" element={<AddNewTravel/>} />
             </Routes>
         </BrowserRouter>
     );
