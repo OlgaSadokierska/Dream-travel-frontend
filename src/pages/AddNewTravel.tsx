@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { PostRequests } from '../communication/network/PostRequest';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddNewTravel() {
     const [formData, setFormData] = useState({
@@ -10,21 +11,53 @@ export default function AddNewTravel() {
         description: '',
         rate: 0
     });
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const validateForm = () => {
+        const { startDate, endDate, rate } = formData;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const minDate = new Date('1950-01-01');
+
+        if (rate < 1 || rate > 5) {
+            setError("Ocena musi być w przedziale 1-5.");
+            return false;
+        }
+
+        if (start < minDate) {
+            setError("Data rozpoczęcia nie może być wcześniejsza niż 1 stycznia 1950.");
+            return false;
+        }
+
+        if (end < start) {
+            setError("Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.");
+            return false;
+        }
+
+        setError(null);
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await axios.post('http://localhost:8080/api/v1/travels/addTravel', formData);
-            alert('Podróż została dodana pomyślnie!');
-        } catch (error) {
-            console.error('Błąd podczas dodawania podróży:', error);
-            alert('Wystąpił błąd podczas dodawania podróży. Spróbuj ponownie.');
+        if (validateForm()) {
+            try {
+                await PostRequests.addTravel(formData);
+                alert('Podróż została dodana pomyślnie!');
+                navigate('/all-travels');
+            } catch (error) {
+                console.error('Błąd podczas dodawania podróży:', error);
+                alert('Wystąpił błąd podczas dodawania podróży. Spróbuj ponownie.');
+            }
         }
     };
+
+    const [isHovered, setIsHovered] = useState(false);
 
     const styles = {
         container: {
@@ -63,20 +96,22 @@ export default function AddNewTravel() {
         },
         button: {
             padding: '10px',
-            backgroundColor: '#044d6a',
+            backgroundColor: isHovered ? '#033b53' : '#044d6a',
             color: 'white',
             border: 'none',
             borderRadius: '5px',
             cursor: 'pointer',
         },
-        buttonHover: {
-            backgroundColor: '#033b53',
-        },
+        error: {
+            color: 'red',
+            marginBottom: '10px',
+        }
     };
 
     return (
         <div style={styles.container}>
             <h2>Dodaj nową podróż</h2>
+            {error && <div style={styles.error}>{error}</div>}
             <form onSubmit={handleSubmit} style={styles.form}>
                 <label style={styles.label}>
                     Kraj:
@@ -100,9 +135,16 @@ export default function AddNewTravel() {
                 </label>
                 <label style={styles.label}>
                     Ocena:
-                    <input type="number" name="rate" value={formData.rate} onChange={handleChange} style={styles.input} />
+                    <input type="number" name="rate" value={formData.rate} onChange={handleChange} style={styles.input} min="1" max="5" />
                 </label>
-                <button type="submit" style={styles.button}>Dodaj podróż</button>
+                <button 
+                    type="submit" 
+                    style={styles.button}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    Dodaj podróż
+                </button>
             </form>
         </div>
     );

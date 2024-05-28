@@ -13,9 +13,14 @@ export function MyTravels() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/v1/travels/my-travels", { withCredentials: true })
-      .then((response) => setTravels(response.data))
-      .catch((error) => console.log(error));
+      .get("http://localhost:8080/api/v1/users/me/travels", { withCredentials: true })
+      .then((response) => {
+        console.log("Travels data:", response.data); // Log the response data
+        setTravels(response.data);
+      })
+      .catch((error) => {
+        console.log("Error fetching travels:", error);
+      });
   }, []);
 
   function formatDate(dateString) {
@@ -35,6 +40,16 @@ export function MyTravels() {
     if (travelDetails) {
       navigate(`/edit/${travelId}`, { state: { travelDetails } });
     }
+  }
+
+  function handleDelete(travelId) {
+    axios.delete(`http://localhost:8080/api/v1/travels/${travelId}`, { withCredentials: true })
+      .then(response => {
+        setTravels(travels.filter(travel => travel.id !== travelId));
+      })
+      .catch(error => {
+        console.error("Error deleting travel:", error);
+      });
   }
 
   const sortedTravels = React.useMemo(() => {
@@ -75,7 +90,7 @@ export function MyTravels() {
     { name: "Miasto", key: "city" },
     { name: "Data rozpoczęcia", key: "startDate" },
     { name: "Data zakończenia", key: "endDate" },
-    { name: "Szczegóły", key: "details" },
+    { name: "Akcje", key: "details" },
   ];
 
   const styles = {
@@ -152,6 +167,12 @@ export function MyTravels() {
                   onClick={() => handleEdit(travel.id)}
                 >
                   Edytuj
+                </button>
+                <button
+                  style={styles.button}
+                  onClick={() => handleDelete(travel.id)}
+                >
+                  Usuń
                 </button>
               </td>
             </tr>
