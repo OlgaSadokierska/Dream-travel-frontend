@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { PutRequests } from '../communication/network/PutRequest';
 
-// Define the interface for the travel data
 interface Travel {
     id: number;
     city: string;
@@ -35,16 +34,43 @@ export default function EditTravel() {
         setTravel({ ...travel, [name]: value });
     };
 
+    const validateForm = () => {
+        const { startDate, endDate, rate } = travel;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const minDate = new Date('1950-01-01');
+
+        if (rate < 1 || rate > 5) {
+            setError("Ocena musi być w przedziale 1-5.");
+            return false;
+        }
+
+        if (start < minDate) {
+            setError("Data rozpoczęcia nie może być wcześniejsza niż 1 stycznia 1950.");
+            return false;
+        }
+
+        if (end < start) {
+            setError("Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.");
+            return false;
+        }
+
+        setError(null);
+        return true;
+    };
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        axios.put(`http://localhost:8080/api/v1/travels/${id}`, travel, { withCredentials: true })
-            .then(response => {
-                navigate(`/details/${id}`, { state: { travelDetails: response.data } });
-            })
-            .catch(err => {
-                setError('Failed to update travel details');
-                console.error('Error updating travel details:', err);
-            });
+        if (validateForm()) {
+            PutRequests.updateTravel(parseInt(id), travel)
+                .then(response => {
+                    navigate(`/details/${id}`, { state: { travelDetails: travel } });
+                })
+                .catch(err => {
+                    setError('Nieudana próba edycji podróży');
+                    console.error('Error updating travel details:', err);
+                });
+        }
     };
 
     const styles = {
