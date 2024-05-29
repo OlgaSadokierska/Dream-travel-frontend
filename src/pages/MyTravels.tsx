@@ -8,6 +8,7 @@ export function MyTravels() {
     key: null,
     direction: "ascending",
   });
+  const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -43,13 +44,18 @@ export function MyTravels() {
   }
 
   function handleDelete(travelId) {
-    axios.delete(`http://localhost:8080/api/v1/travels/${travelId}`, { withCredentials: true })
-      .then(response => {
-        setTravels(travels.filter(travel => travel.id !== travelId));
-      })
-      .catch(error => {
-        console.error("Error deleting travel:", error);
-      });
+    const confirmDelete = window.confirm("Czy na pewno chcesz usunąć tę podróż?");
+    if (confirmDelete) {
+      axios.delete(`http://localhost:8080/api/v1/travels/${travelId}`, { withCredentials: true })
+        .then(response => {
+          setTravels(travels.filter(travel => travel.id !== travelId));
+          setSuccessMessage("Podróż została pomyślnie usunięta.");
+          setTimeout(() => setSuccessMessage(""), 3000);
+        })
+        .catch(error => {
+          console.error("Error deleting travel:", error);
+        });
+    }
   }
 
   const sortedTravels = React.useMemo(() => {
@@ -129,11 +135,17 @@ export function MyTravels() {
     evenRow: {
       backgroundColor: "#f9f9f9",
     },
+    successMessage: {
+      color: "green",
+      marginTop: "20px",
+      textAlign: "center",
+    }
   };
 
   return (
     <div style={styles.container}>
       <h2>Lista moich podróży</h2>
+      {successMessage && <div style={styles.successMessage}>{successMessage}</div>}
       <table style={styles.table}>
         <thead>
           <tr>
